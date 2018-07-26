@@ -6,3 +6,4 @@ This is an example for a openid-connect provider. It support many type of flow. 
 node index.js
 ```
 ### Test how it work
+Follow direction in [here](http://18.179.147.115:3000/genki-system-all/OpenID-Client-Example)
