@@ -3,7 +3,7 @@
 
 const express = require('express'); // eslint-disable-line import/no-unresolved
 
-const Provider = require('../lib');
+const Provider = require('oidc-provider');
 
 const app = express();
 
