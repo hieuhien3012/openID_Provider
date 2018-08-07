@@ -11,17 +11,17 @@ const grantable = new Set([
 ]);
 
 class CollectionSet extends Set {
-  add(name) {
+  add(name) {                                                                                   // add/create collections
     const nu = this.has(name);
     super.add(name);
     if (!nu) {
       DB.collection(name).createIndexes([
-        ...(grantable.has(name)
-          ? [{
+        ...( grantable.has(name)?
+          [{
             key: { grantId: 1 },
             partialFilterExpression: { grantId: { $exists: true } },
           }] : []),
-        ...(name === 'device_code'
+        ...( name === 'device_code'
           ? [{
             key: { userCode: 1 },
             partialFilterExpression: { userCode: { $exists: true } },
@@ -40,7 +40,7 @@ class MongoAdapter {
     collections.add(this.name);
   }
 
-  upsert(_id, payload, expiresIn) {
+upsert(_id, payload, expiresIn) {                                                               // update clients/codes in database
     let expiresAt;
 
     if (expiresIn) {
@@ -52,7 +52,11 @@ class MongoAdapter {
     if (this.name === 'client') {
       expiresAt = new Date(Date.now() + (24 * 60 * 60 * 1000));
     }
-
+    
+    // console.log('------------------------Upserting-----------------')
+    // console.log('\x1b[36m%s\x1b[0m',this.name)
+    // console.log(payload)
+    // console.log('\x1b[36m%s\x1b[0m','xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
     return this.coll().updateOne({ _id }, {
       $set: {
         _id,
@@ -70,12 +74,13 @@ class MongoAdapter {
     return this.coll().find({ userCode }).limit(1).next();
   }
 
-  destroy(_id) {
+  destroy(_id) {                                                                                //Destroy codes/tokens
     return this.coll().findOneAndDelete({ _id })
       .then((found) => {
+        // console.log('----Destroy',this.name)
+        // console.log(_id)
         if (found.value && found.value.grantId) {
           const promises = [];
-
           collections.forEach((name) => {
             if (grantable.has(name)) {
               promises.push(this.coll(name).deleteMany({ grantId: found.value.grantId }));
@@ -88,23 +93,23 @@ class MongoAdapter {
       });
   }
 
-  consume(_id) {
+  consume(_id) {                                                                                // update consumed time
     return this.coll().findOneAndUpdate({ _id }, { $currentDate: { consumed: true } });
   }
 
-  coll(name) {
+  coll(name) {                                                                                  // transmit collection's name to coll() static function
     return this.constructor.coll(name || this.name);
   }
 
-  static coll(name) {
+  static coll(name) {                                                                           // connect to collection
     return DB.collection(name);
   }
 
-  static async connect() {
-    const connection = await MongoClient.connect(process.env.MONGODB_URI, {
+  static async connect() {                                                                      // connect to MongoDB database
+    const connection = await MongoClient.connect("mongodb://localhost:27017/", {
       useNewUrlParser: true,
     });
-    DB = connection.db(connection.s.options.dbName);
+    DB = connection.db("oidc-provider");
   }
 }
 

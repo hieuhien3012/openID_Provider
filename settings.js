@@ -1,11 +1,14 @@
 const pkg = require('./package.json');
 
+module.exports.issuer = 'http://localhost:3000'
+
 module.exports.config = {
   acrValues: ['urn:mace:incommon:iap:bronze'],
   cookies: {
     long: { signed: true, maxAge: (1 * 24 * 60 * 60) * 1000 }, // 1 day in ms
     short: { signed: true },
     keys: ['some secret key', 'and also the old rotated away some time ago', 'and one more'],
+    thirdPartyCheckUrl: 'https://cdn.rawgit.com/panva/3rdpartycookiecheck/92fead3f/start.html', // TODO: move under sessionManagement in next major
   },
   discovery: {
     service_documentation: pkg.homepage,
@@ -19,28 +22,28 @@ module.exports.config = {
     address: ['address'],
     email: ['email', 'email_verified'],
     phone: ['phone_number', 'phone_number_verified'],
-    profile: ['birthdate', 'family_name', 'gender', 'given_name', 'locale', 'middle_name', 'name',
+    profile: ['birthdate', 'last_name', 'gender', 'given_name', 'locale', 'middle_name', 'first_name',
       'nickname', 'picture', 'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo'],
   },
   features: {
     devInteractions: false, // defaults to true
-    // discovery: true, // defaults to true
-    // requestUri: true, // defaults to true
-    // oauthNativeApps: true, // defaults to true
-    // pkce: true, // defaults to true
+    // discovery: false, // defaults to true
+    // requestUri: false, // defaults to true
+    // oauthNativeApps: false, // defaults to true
+    // pkce: false, // defaults to true
 
-    backchannelLogout: true, // defaults to false
+    // backchannelLogout: true, // defaults to false
     claimsParameter: true, // defaults to false
     conformIdTokenClaims: true, // defaults to false
-    deviceCode: true, // defaults to false
+    // deviceCode: true, // defaults to false
     encryption: true, // defaults to false
-    frontchannelLogout: true, // defaults to false
+    // frontchannelLogout: true, // defaults to false
     introspection: true, // defaults to false
     registration: true, // defaults to false
     request: true, // defaults to false
     revocation: true, // defaults to false
     sessionManagement: true, // defaults to false
-    webMessageResponseMode: true, // defaults to false
+    // webMessageResponseMode: true, // defaults to false
   },
   formats: {
     default: 'opaque',
@@ -63,6 +66,45 @@ module.exports.config = {
     //   registrations 24 hours after registration
     RegistrationAccessToken: 1 * 24 * 60 * 60, // 1 day in seconds
   },
+  routes: {
+  },
+
+  async logoutSource(ctx, form) {
+    // @param ctx - koa request context
+    // @param form - form source (id="op.logoutForm") to be embedded in the page and submitted by
+    //   the End-User
+    ctx.body = `<!DOCTYPE html>
+    <head>
+      <title>Logout Request</title>
+      <style>
+      @import url(https://fonts.googleapis.com/css?family=Roboto:400,100);button,h1{text-align:center}h1{font-weight:100;font-size:1.3em}body{font-family:Roboto,sans-serif;margin-top:25px;margin-bottom:25px}.container{padding:0 40px 10px;width:274px;background-color:#F7F7F7;margin:0 auto 10px;border-radius:2px;box-shadow:0 2px 2px rgba(0,0,0,.3);overflow:hidden}button{font-size:14px;font-family:Arial,sans-serif;font-weight:700;height:36px;padding:0 8px;width:100%;display:block;margin-bottom:10px;position:relative;border:0;color:#fff;text-shadow:0 1px rgba(0,0,0,.1);background-color:#4d90fe;cursor:pointer}button:hover{border:0;text-shadow:0 1px rgba(0,0,0,.3);background-color:#357ae8}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Sign-out from ${ctx.host}?</h1>
+        <script>
+          function logout() {
+            var form = document.getElementById('op.logoutForm');
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'logout';
+            input.value = 'yes';
+            form.appendChild(input);
+            form.submit();
+          }
+          function rpLogoutOnly() {
+            var form = document.getElementById('op.logoutForm');
+            form.submit();
+          }
+        </script>
+        ${form}
+        <button onclick="logout()">Yes, sign me out</button>
+        <button onclick="rpLogoutOnly()">No, stay signed in</button>
+      </div>
+    </body>
+    </html>`;
+  }
 };
 
 module.exports.clients = [

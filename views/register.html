@@ -1,0 +1,19 @@
+<form autocomplete="off" action="/register/<%= details.uuid %>" method="post">
+    
+    <% if (details.uuid) { %><input type="hidden" name="uuid" value="<%= details.uuid %>"/><% } %>
+    Name <input required type="text" name="first_name" placeholder="First Name" autofocus="on">
+    <input required type="text" name="middle_name" placeholder="Middle Name" autofocus="on">
+    <input required type="text" name="last_name" placeholder="Last Name" autofocus="on">
+    Phone <input required type="text" name="phone_number" placeholder="Phone number" autofocus="on">
+    Address <input required type="text" name="country" placeholder="Country" autofocus="on">
+    <input required type="text" name="city" placeholder="City" autofocus="on">
+    <input required type="text" name="district" placeholder="District" autofocus="on">
+    <input required type="text" name="street" placeholder="Street" autofocus="on">
+    <input required type="text" name="number" placeholder="House number" autofocus="on">
+    E-Mail <input required type="email" name="email" placeholder="E-Mail" autofocus="on">
+    sub <input required type="text" name="sub" placeholder="Make a sub" autofocus="on">
+    Password <input required type="password" name="password" placeholder="Make your Password" autofocus="on">
+    Date of birth <input required type="date" name="birthdate">
+
+    <button type="submit" class="login login-submit" style="margin-top: 10px">Confirm</button>
+</form>

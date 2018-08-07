@@ -104,6 +104,14 @@
         padding-top: 10px;
       }
 
+      .register {
+        border: 0px;
+        color: #fff;
+        text-shadow: 0 1px rgba(0,0,0,0.1);
+        background-color: #2C5364;
+        border-radius: 10%;
+      }
+
       button {
         cursor: pointer;
       }
@@ -117,20 +125,8 @@
       </div>
       <%- body %>
       <div class="login-help">
-        <a href="<%= details.returnTo %>">[ Cancel ]</a>
         <% if (client.tosUri) { %><a href="<%= client.tosUri %>">[ Terms of Service ]</a><% } %>
         <% if (client.policyUri) { %><a href="<%= client.policyUri %>">[ Privacy Policy ]</a><% } %>
-      </div>
-    </div>
-    <div class="login-card">
-      <div class="grant-debug">
-        <%= details.uuid %>
-      </div>
-      <div class="grant-debug">
-        <%- debug %>
-      </div>
-      <div class="grant-debug">
-        <%- interaction %>
       </div>
     </div>
   </body>
