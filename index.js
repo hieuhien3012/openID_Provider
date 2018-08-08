@@ -37,8 +37,8 @@ eventEmitter.on('interaction.started', (detail, ctx) => {
 
 provider.use(helmet());                                                         //secure HEADER
 provider.initialize({                                                           //initiate provider
-  adapter: require('./adapters/mongodb'),                                       //import client database
-  // clients,                                                                   //import all clients manually
+  // adapter: require('./adapters/mongodb'),                                       //import client database
+  clients,                                                                   //import all clients manually
   keystore: { keys: certificates },                                             //import certificates
 })
 .then(() => {
